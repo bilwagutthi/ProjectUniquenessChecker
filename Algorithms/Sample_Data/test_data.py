@@ -1,0 +1,6 @@
+'''
+    This title and abstract will be used for testing.
+
+'''
+title="Current Twitter Trends Sentiment Analysis using Convolution Neural Network"
+abstract="Twitter is a micro-blogging system that allows you to send and receive short posts called tweets. Twitter has become the best indicator of the wider pulse of the world and what's happening within it. Analyzing the nature of these tweets can be helpful in fields like business, sociology, economics, and physiological studies. Sentiment Analysis is the process of ‘computationally’ determining whether a piece of writing is positive, negative or neutral. When many Twitter users tweet about the same topics at the same time, they “trend” or become “trending topics”.Twitter then lists the current top 30 topics on the trending page. Topics break into the Trends list when the volume of Tweets about that topic at a given moment dramatically increases. Performing sentiment analysis on these topics helps to analyze whether the reaction to topic is positive or negative. This is done using a convolution neural network. The network is trained with a dataset which has tweets already labeled as positive and negative. Then the top tweets for current trending topics are gathered and passed through the neural network to determine whether the trend has more positive or negative reactions."
