@@ -2,40 +2,79 @@
     This program defines a class of functions for different forms of text pre-processing.
 
     Some basic pre-processing such as:
-    
-        1. Remove HTML tags
-        2. Remove extra whitespace
-        3. Convert accented characters to ASCII characters
-        4. Expand contractions
-        5. Remove special characters/Punctuation 
-        6. Lowercase all texts
+
+
+        1. Lowercase all texts
+        2. Remove special characters/Punctuation
+        3. Remove HTML tags
+        4. Remove extra whitespace
+        5. Convert accented characters to ASCII characters
+        6. Expand contractions
+       
     
     Some special functions such as
         7. Convert number words to numeric form
         8. Remove numbers
         9. Remove stopwords
+        10. Stemming
         10. Lemmatization
         11. Tokanization   
 """
 
-import inflect
+#import inflect
 import nltk
 import string
 import re
+import unidecode
+# import contractions
+from bs4 import BeautifulSoup
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize
 from nltk.stem.porter import PorterStemmer 
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer 
-from nltk.tokenize import word_tokenize 
+from nltk.tokenize import word_tokenize
+
 
   
 class pre_processing:
 
-    def text_lowercase(text):
-        return text.lower() 
+    # 1. Convert to lowercase
 
-    # Function to convert numbers to words
+    def text_lowercase(self,text):
+        return text.lower()
+
+    # 2. Function to remove punctuation
+    def remove_punctuation(self,text): 
+        translator = str.maketrans('', '', string.punctuation) 
+        return text.translate(translator)
+
+    # 3. Remove html tags from text
+
+    def strip_html_tags(self,text):
+        soup = BeautifulSoup(text, "html.parser")
+        stripped_text = soup.get_text(separator=" ")
+        return stripped_text
+
+    # 4. Remove whitespace from text 
+    
+    def remove_whitespace(self,text):
+        return  " ".join(text.split())
+    
+    # 5. Remove accented characters from text, e.g. café
+
+    def remove_accented_chars(self,text):
+        text = unidecode.unidecode(text)
+        return text             
+    
+    # 6. Expand shortened words, e.g. don't to do not
+    
+    def expand_contractions(self,text):
+        text = list(contractions.expand_texts([text], precise=True))[0]
+        return text    
+
+    # 7.Function to convert numbers to words
+    
     def convert_number(text):
         # Split the string into a list of words
         p = inflect.engine() 
@@ -53,33 +92,25 @@ class pre_processing:
         temp_str = ' '.join(new_string)
         return temp_str 
     
-    # Function to remove punctuation
-    def remove_punctuation(text): 
-        translator = str.maketrans('', '', string.punctuation) 
-        return text.translate(translator) 
+    # 8. Remove numbers 
     
-    # Remove numbers 
     def remove_numbers(text):
         result = re.sub(r'\d+', '', text)
         return result 
 
-    # remove whitespace from text 
-    def remove_whitespace(text):
-        return  " ".join(text.split())
+    # 9. Remove stopwords function
 
-    
-    # remove stopwords function
-    def remove_stopwords(text):
+    def remove_stopwords(self,text):
         stop_words = set(stopwords.words("english"))
         word_tokens = word_tokenize(text)
         filtered_text = [word for word in word_tokens if word not in stop_words]
-        return filtered_text 
+        strg=" "
+        return (strg.join(filtered_text)) 
  
-    # stem words in the list of tokenised words 
-    def stem_words(text):
-        stemmer = PorterStemmer()
-        word_tokens = word_tokenize(text) 
-        stems = [stemmer.stem(word) for word in word_tokens] 
+    # 10. Stem words in the list of tokenised word Eg:- "writing" -> "write"
+    def stem_words(self,word_list):
+        stemmer = PorterStemmer() 
+        stems = [stemmer.stem(word) for word in word_list] 
         return stems        
 
     
@@ -92,32 +123,33 @@ class pre_processing:
         lemmas = [lemmatizer.lemmatize(word, pos ='v') for word in word_tokens] 
         return lemmas
 
-    #remove html tags from text
+    # Returns word toekens
+    def create_word_tokens(self,text):
+        return word_tokenize(text)
 
-    def strip_html_tags(text):
-        soup = BeautifulSoup(text, "html.parser")
-        stripped_text = soup.get_text(separator=" ")
-        return stripped_text
+    # Returns Sentence tokens
+    def create_sentence_tokens(para):
+        return sent_tokenize(para)
 
-#remove accented characters from text, e.g. café
-    def remove_accented_chars(text):
-        text = unidecode.unidecode(text)
-        return text             
-# expand shortened words, e.g. don't to do not
-    def expand_contractions(text):
-       
-        text = list(cont.expand_texts([text], precise=True))[0]
-        return text    
+    # Function returns a string after performing some basic operations
 
-    def create_tokens(text):
-        doc = nlp(text)
-        tokens = [w2n.word_to_num(token.text) if token.pos_ == 'NUM' else token for token in doc]
-        return tokens
-
-    def basic_ops(text):
-        text=text_lowercase(text)
-        text=remove_whitespace(text)
-        text=remove_accented_chars(text)
-
+    def basic_ops(self,text):
+        text=self.text_lowercase(text)
+        text=self.remove_punctuation(text)
+        text=self.strip_html_tags(text)
+        text=self.remove_whitespace(text)
+        text=self.remove_accented_chars(text)
+       # text=self.expand_contractions(text)
+        #text=self.create_word_tokens(text)
         return text
+
+    # Function returns a list of word tokens after some advanced pre-processing
+
+    def advanced_ops(self,text):
+        text=self.basic_ops(text)
+        filtered_string=self.remove_stopwords(text)
+        token_list=self.create_word_tokens(filtered_string)
+        token_list=self.stem_words(token_list)
+        return token_list
+
     

@@ -4,8 +4,7 @@
     ref:https://medium.com/@gautam.karmakar/manhattan-lstm-model-for-text-similarity-2351f80d72f1
 
 '''
-from Sample_Data.data2 import sample_data
-from Sample_Data.test_data import title,abstract
+.
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model
 from keras.layers import Input, Embedding, LSTM, Merge
@@ -14,19 +13,10 @@ from keras.optimizers import Adadelta
 from keras.callbacks import ModelCheckpoint
 
 class Siamese_LSTM:
-    
-    def embedd():
-        embedding_dim = 300
-        embeddings = 1 * np.random.randn(len(vocabulary) + 1, embedding_dim) #embedding matrix
-        embeddings[0] = 0 #padding will be ignored
-        #Build the embedding matrix
-        for word, index in vocabulary.items():
-        if word in word2vec.vocab:
-        embeddings[index] = word2vec.word_vec(word)
-   
+
     def model_build():
-        left_input = Input(shape=(max_seq_length,), dtype=’int32')
-        right_input = Input(shape=(max_seq_length,), dtype=’int32')
+        left_input = Input(shape=(max_seq_length,), dtype='int32')
+        right_input = Input(shape=(max_seq_length,), dtype='int32')
         embedding_layer = Embedding(len(embeddings), embedding_dim, weights=[embeddings], input_length=max_seq_length, trainable=False)
         # Embedded version of the inputs
         encoded_left = embedding_layer(left_input)
