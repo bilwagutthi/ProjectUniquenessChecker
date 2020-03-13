@@ -1,5 +1,5 @@
 ''' 
-  Algorithm for lstm
+  Algorithm for Doc2Vec
   ref:https://medium.com/@mishra.thedeepak/doc2vec-in-a-simple-way-fa80bfe81104     
 '''
 
