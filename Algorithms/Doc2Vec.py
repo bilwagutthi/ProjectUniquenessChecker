@@ -1,3 +1,8 @@
+''' 
+  Algorithm for lstm
+  ref:https://medium.com/@mishra.thedeepak/doc2vec-in-a-simple-way-fa80bfe81104     
+'''
+
 #Import all the dependencies
 import gensim
 from nltk import RegexpTokenizer
