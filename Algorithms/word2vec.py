@@ -13,11 +13,8 @@ class  Word2Vec:
     def trained_vecs(self,abstracts_tokens,embedding_dim):
         vocabs = {}
         vocabs_cnt = 0
-
         vocabs_not_w2v = {}
         vocabs_not_w2v_cnt = 0
-
-
         word2vec=gensim.models.word2vec.Word2Vec.load("w2vtest1.model").wv
 
         for token_list in abstracts_tokens:
@@ -26,16 +23,12 @@ class  Word2Vec:
                     if word not in vocabs_not_w2v:
                         vocabs_not_w2v_cnt += 1
                         vocabs_not_w2v[word] = 1
-
-                    # If you have never seen a word, append it to vocab dictionary.
                     if word not in vocabs:
                         vocabs_cnt += 1
                         vocabs[word] = vocabs_cnt
 
-        embeddings = 1 * np.random.randn(len(vocabs) + 1, embedding_dim)  # This will be the embedding matrix
-        embeddings[0] = 0  # So that the padding will be ignored
-
-        # Build the embedding matrix
+        embeddings = 1 * np.random.randn(len(vocabs) + 1, embedding_dim) 
+        embeddings[0] = 0 
         for word, index in vocabs.items():
             if word in word2vec.vocab:
                 embeddings[index] = word2vec.word_vec(word)
@@ -54,8 +47,7 @@ class  Word2Vec:
         df['sentences2_n']=[[] for _ in range(len(df))]
         for index, row in df.iterrows():
             for sentence in ['sentences1', 'sentences2']:
-
-                q2n = []  # q2n -> question numbers representation
+                sent2 = []
                 word_list=pp.advanced_ops(row[sentence])
                 for word in word_list:
                     # If a word is missing from word2vec model.
@@ -68,62 +60,19 @@ class  Word2Vec:
                     if word not in vocabs:
                         vocabs_cnt += 1
                         vocabs[word] = vocabs_cnt
-                        q2n.append(vocabs_cnt)
+                        sent2.append(vocabs_cnt)
                     else:
-                        q2n.append(vocabs[word])
-                # Append question as number representation
-                df.at[index, sentence + '_n'] = q2n
-        embeddings = 1 * np.random.randn(len(vocabs) + 1, embedding_dim)  # This will be the embedding matrix
-        embeddings[0] = 0  # So that the padding will be ignored
+                        sent2.append(vocabs[word])
+                df.at[index, sentence + '_n'] = sent2
+        embeddings = 1 * np.random.randn(len(vocabs) + 1, embedding_dim)
+        embeddings[0] = 0
 
-        # Build the embedding matrix
         for word, index in vocabs.items():
             if word in word2vec.vocab:
                 embeddings[index] = word2vec.word_vec(word)
         del word2vec
 
         return df, embeddings
-
-        
-    def get_vecs(self,df,embedding_dim):
-        vocabs = {}
-        vocabs_cnt = 0
-        vocabs_not_w2v = {}
-        vocabs_not_w2v_cnt = 0
-        word2vec = gensim.models.word2vec.Word2Vec.load("w2vtest1.model").wv
-        pp=pre_processing()
-        df['sentences1_n']=[[] for _ in range(len(df))]
-        df['sentences2_n']=[[] for _ in range(len(df))]
-        for index, row in df.iterrows():
-            for sentence in ['sentences1', 'sentences2']:
-                q2n = []  # q2n -> question numbers representation
-                for word in row[sentence]:
-                    # If a word is missing from word2vec model.
-                    if word not in word2vec.vocab:
-                        if word not in vocabs_not_w2v:
-                            vocabs_not_w2v_cnt += 1
-                            vocabs_not_w2v[word] = 1
-
-                    # If you have never seen a word, append it to vocab dictionary.
-                    if word not in vocabs:
-                        vocabs_cnt += 1
-                        vocabs[word] = vocabs_cnt
-                        q2n.append(vocabs_cnt)
-                    else:
-                        q2n.append(vocabs[word])
-                # Append question as number representation
-                df.at[index, sentence + '_n'] = q2n
-        embeddings = 1 * np.random.randn(len(vocabs) + 1, embedding_dim)  # This will be the embedding matrix
-        embeddings[0] = 0  # So that the padding will be ignored
-
-        # Build the embedding matrix
-        for word, index in vocabs.items():
-            if word in word2vec.vocab:
-                embeddings[index] = word2vec.word_vec(word)
-        del word2vec
-
-        return df, embeddings
-
 
     def train_word2vec_model(token_list):
         model = gensim.models.Word2Vec(token_list, size=300)
