@@ -10,6 +10,7 @@ from word2vec import Word2Vec
 from lstm import Siamese_LSTM
 
 import numpy as np
+import pandas as pd
 
 
 # getting titles and abstracts
@@ -20,25 +21,44 @@ abstracts=sample_data.values()
 # creating tokens
 prep=pre_processing()
 title_tokens=[prep.advanced_ops(title) for title in titles]
-abstract_tokens=[prep.advanced_ops(abstract) for abstract in abstracts]
+abstracts_tokens=[prep.advanced_ops(abstract) for abstract in abstracts]
 
 
 
 # Training word2vec model
 
 wtv=Word2Vec()
-#wtv.train_word2vec_model(abstract_tokens)
+#wtv.train_word2vec_model(abstracts_tokens)
 
 # Training lstm model
 
-# Getting word embeddings
+# Pre- paring training data
+TRAIN_CSV = 'C:\\Users\\bilwa\\code\\ProjectUniquenessChecker\\Algorithms\\sample_data.csv'
+df = pd.read_csv(TRAIN_CSV)
 embedding_dim = 300
-max_seq_length = 20
+train_df,embeddings=wtv.get_df_embs(df,embedding_dim)
+
+print(train_df.columns,train_df[0:6])
+        # Split to train validation
+validation_size = int(len(train_df) * 0.1)
+training_size = len(train_df) - validation_size
+
+X = train_df[['sentences1_n', 'sentences2_n']]
+Y = train_df['is_similar']
+
+print(X[0:2],Y[0:2])
+
+# Getting word embeddings
+
+
 use_w2v = True
 
-embeddings =np.array([wtv.get_vecs(abstract_token, embedding_dim=embedding_dim) for abstract_token in abstract_tokens])
-
+#embeddings =wtv.trained_vecs(abstracts_tokens,embedding_dim)
+print('Before:',type(embeddings),len(embeddings))
 # LSTM training
+max_seq_length =max([len(token_list) for token_list in abstracts_tokens])
+
+print("max lenght",max_seq_length)
 
 lstm_train=Siamese_LSTM()
-lstm_train.train_model(embeddings,embedding_dim,max_seq_length)
+lstm_train.train_model(X,Y,validation_size,embeddings,embedding_dim,max_seq_length)
