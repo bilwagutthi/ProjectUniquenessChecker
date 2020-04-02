@@ -7,23 +7,27 @@
 
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model, Sequential
-from keras.layers import Input, Embedding, LSTM, GRU, Conv1D, Conv2D, GlobalMaxPool1D, Dense, Dropout
-from keras.layers import Concatenate
+from keras.layers import Input, Embedding, LSTM, GRU, Conv1D, Conv2D, GlobalMaxPool1D, Dense, Dropout, Concatenate, Layer
 import keras.backend as K
-from keras.optimizers import Adadelta
 from keras.callbacks import ModelCheckpoint
-from keras.layers import Layer
+from keras import optimizers
+import keras as ker
+
 import tensorflow as tf
 from numpy import shape
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import itertools
-from keras import optimizers
-import keras as ker
+
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+
 class Siamese_LSTM:
 
-    def train_model(self,X,Y,validation_size,embeddings,embedding_dim,max_seq_length):
+    def train_model(self,X,Y,validation_size,embeddings,embedding_dim,max_seq_length,batch_size,n_epoch):
         
         #Disable gpu
         tf.config.experimental.set_visible_devices([], 'GPU')
@@ -34,9 +38,6 @@ class Siamese_LSTM:
         X_train = self.split_and_zero_padding(X_train, max_seq_length)
         X_validation = self.split_and_zero_padding(X_validation, max_seq_length)
 
-        gpus = 2
-        batch_size = 1#1024 * gpus
-        n_epoch = 10
         n_hidden = 50
 
         x = Sequential()
@@ -46,7 +47,6 @@ class Siamese_LSTM:
         x.add(LSTM(n_hidden,input_shape=(max_seq_length,)))
 
         shared_model = x
-        #meghan@rooman.net
         # The visible layer
         left_input = Input(shape=(max_seq_length,), dtype='int32')
         right_input = Input(shape=(max_seq_length,), dtype='int32')
@@ -54,13 +54,12 @@ class Siamese_LSTM:
         # Pack it all up into a Manhattan Distance model
         malstm_distance = ManDist()([shared_model(left_input), shared_model(right_input)])
         model = Model(inputs=[left_input, right_input], outputs=[malstm_distance])
-
         
-        model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
+        adam_optimizer=optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, amsgrad=False)
+        
+        model.compile(loss='mean_squared_error', optimizer=adam_optimizer, metrics=['accuracy'])
         model.summary()
         shared_model.summary()
-
-        model.compile(loss='mean_squared_error', optimizer='sgd')
 
         
         malstm_trained = model.fit([X_train['left'], X_train['right']], Y_train,
@@ -68,6 +67,33 @@ class Siamese_LSTM:
                                validation_data=([X_validation['left'], X_validation['right']], Y_validation))
         
         model.save('lstmtest1.model')
+
+        # Plotting and saving data
+        # Plot accuracy
+        plt.subplot(211)
+        print(malstm_trained.history.keys())
+        plt.plot(malstm_trained.history['accuracy'])
+        plt.plot(malstm_trained.history['val_accuracy'])
+        plt.title('Model Accuracy')
+        plt.ylabel('Accuracy')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper left')
+
+        # Plot loss
+        plt.subplot(212)
+        plt.plot(malstm_trained.history['loss'])
+        plt.plot(malstm_trained.history['val_loss'])
+        plt.title('Model Loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper right')
+
+        plt.tight_layout(h_pad=1.0)
+        plt.savefig('history-graph.png')
+
+        print(str(malstm_trained.history['val_accuracy'][-1])[:6] +
+            "(max: " + str(max(malstm_trained.history['val_accuracy']))[:6] + ")")
+        print("Done.")
     
     def split_and_zero_padding(self,df, max_seq_length):
         # Split to dicts

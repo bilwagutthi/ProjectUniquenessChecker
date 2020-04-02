@@ -7,7 +7,7 @@ ref:https://github.com/likejazz/Siamese-LSTM/blob/master/util.py
 
 import gensim
 import numpy as np
-from pre_processing import pre_processing
+from Algorithms.pre_processing import pre_processing
 
 class  Word2Vec:
     def trained_vecs(self,abstracts_tokens,embedding_dim):
@@ -74,7 +74,7 @@ class  Word2Vec:
 
         return df, embeddings
 
-    def train_word2vec_model(token_list):
+    def train_word2vec_model(self,token_list):
         model = gensim.models.Word2Vec(token_list, size=300)
         model.train(token_list, total_examples=len(token_list), epochs=10)
         model_name='w2vtest1.model'
