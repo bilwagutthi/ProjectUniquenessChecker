@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    {% block head %}
+    <form method="POST">
+        Enter title
+        <input type="text" name="title">
+        Enter abstract
+        <input type="text" name="abstract">
+        <button type="submit" value="check">check score</button>
+    </form>
+    {% endblock %}
+</body>
+
+</html>
