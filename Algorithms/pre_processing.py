@@ -134,6 +134,8 @@ class pre_processing:
     # Function returns a string after performing some basic operations
 
     def basic_ops(self,text):
+        if type(text)==list:
+            text=' '.join([str(word) for word in text]) 
         text=self.text_lowercase(text)
         text=self.remove_punctuation(text)
         text=self.strip_html_tags(text)

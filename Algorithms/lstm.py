@@ -9,6 +9,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.models import Model, Sequential
 from keras.layers import Input, Embedding, LSTM, GRU, Conv1D, Conv2D, GlobalMaxPool1D, Dense, Dropout, Concatenate, Layer
 import keras.backend as K
+import keras.backend.tensorflow_backend as tb
 from keras.callbacks import ModelCheckpoint
 from keras import optimizers
 import keras as ker
@@ -107,8 +108,9 @@ class Siamese_LSTM:
     
         
     def compare(self,df):
+        tb._SYMBOLIC_SCOPE.value = True
         model = ker.models.load_model('lstmtest1.model',custom_objects={'ManDist': ManDist})
-        max_seq_length =179
+        max_seq_length =300
         X_test = self.split_and_zero_padding(df, max_seq_length)
         prediction = model.predict([X_test['left'], X_test['right']])
         return prediction

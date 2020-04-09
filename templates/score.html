@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    
+    <form method="POST" action='/'>
+        Enter title
+        <input type="text" name="title" id="getTitle">
+        Enter abstract
+        <input type="text" name="abstract" id="getAbstract">
+        <button type="submit" value="check" onclick="getScoreNow" id="getScore">check score</button>
+    </form>
+    
+    <p id="resultScore"></p>
+
+    <script>
+        function getScoreNow(){
+            var  title= $('#getTitle').val();
+            var abstract= $('#getAbstract').val();
+        $.ajax(
+         {
+             type:'POST',
+             url:'/'
+             data :{
+                 'title': tile,
+                 'abstract' :abstract
+
+             }
+         }   
+        );
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 """
-    Main program to check uniqueness
+    This program returns the uniqueness.
 
 """
 
@@ -42,5 +42,9 @@ def main(title,abstract):
         
     top3abstracts=sorted(zip(abstracts_dist,dataset_titles),reverse=True)[:3]
 
-    return top3titles,top3abstracts
+    max_sim=max(max(top3abstracts),max(top3titles))
+    uniqueness=100- max_sim[0]
+    top_title=max_sim[1]
+
+    return uniqueness,top_title,top3titles,top3abstracts
 
