@@ -1,0 +1,48 @@
+pot#n	basket%1:06:00::	basket#n#1
+brain#n	brain%1:18:00::	brain#n#4
+illuminated#a	bright%3:00:00::	bright#a#1
+fille#n	browser%1:18:00::	browser#n#1
+switch#n	button%1:06:01::	button#n#2
+parking lot#n	car%1:06:01::	car#n#2
+beach#n	coast%1:17:00::	coast#n#1
+fife#n	concert%1:10:00::	concert#n#1
+far	distant%3:00:02::	distant#a#2
+horse#n	donkey%1:10:00::	donkey#n#1
+horse#n	donkey%1:05:00::	donkey#n#2
+autobus#n	drive%1:04:00::	drive#n#8
+fife#n	fife%1:06:00::	fife#n#1
+fille#n	fife%1:06:00::	fille#n#1
+fille#n	girl%1:18:02::	girl#n#2
+magnificent#a	gorgeous%3:00:00:beautiful:00	gorgeous#a#1
+fille#n	head%1:08:00::	head#n#1
+secret#a	hidden%3:00:00:concealed:00	hidden#a#3
+flexible#a	hot%3:00:01::	hot#a#1
+huddle_together#v	huddle_together%2:38:00::	huddle_together#v#1
+huddle_together	huddle%2:38:00::	huddle#v#2
+attack#v	invade%2:33:00::	invade#v#1
+surf#v	look_around%2:39:00::	look_around#v#1
+fille#n	man%1:18:00::	man#n#1
+fife#n	metal%1:27:00::	metal#n#1
+undergo	modify%2:30:10::	modify#v#3
+paper#n	news%1:10:00::	news#n#1
+opt#v	opt%2:31:00::	opt#v#1
+parking lot#n	parking_lot%1:15:00::	parking_lot#1
+parking lot#n	parking%1:23:00::	parking#n#1
+undergo#v	pass_through%2:38:02::	pass_through#v#2
+fife#n	piccolo%1:06:00::	piccolo#n#1
+enjoyable#a	pleasant%3:00:00::	pleasant#a#1
+happiness#n	pleasure%1:09:00::	pleasure#n#2
+electricity#n	plutonium%1:27:00::	Plutonium#n#1
+opt#v	prefer%2:41:00::	prefer#v#3
+black hole#n	relativity%1:09:00::	relativity#n#1
+fearful	scary%3:00:00:alarming:00	scary#a#1
+opt#v	select%2:31:00::	select#v#1
+model#v	simulate%2:36:04::	simulate#v#1
+parking lot#n	street%1:06:00::	street#n#1
+move#v	think%2:31:03::	think#v#2
+endanger#v	threaten%2:42:00::	threaten#v#1
+parking lot#n	tomato%1:13:00::	tomato#n#1
+undergo#v	undergo%2:39:04::	undergo#v#1
+fife#n	whale%1:18:00::	whale#n#1
+broad#a	wide%3:00:02::	wide#a#5
+electricity#n	wire%1:06:01::	wire#n#2

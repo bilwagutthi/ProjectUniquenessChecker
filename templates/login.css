@@ -1,9 +1,9 @@
 *{margin:0; padding:0;}
 body{
 	background-image: linear-gradient( 90deg, #FD6585 10%, #0D25B9 100%);
-    padding-top: 20vh;
+    padding-top: 2vh; 
 }
-.form-container{
+.form-container, form{
 	width:250px;
 	height: auto;
 	padding: 70px 70px;
