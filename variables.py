@@ -1,0 +1,14 @@
+WORD_VEC_MODEL='wordVector.model'
+TITLE_MODEL_JSON='tileModel.json'
+ABSTRACT_MODEL_JSON='abstractModel.json'
+TITLE_MODEL_H5='tileModel.h5'
+ABSTRACT_MODEL_H5='abstractModel.h5'
+DIMENSIONS=300
+MAX_TITLE_LENGHT=15
+MAX_ABSTRACT_LENGHT=10
+TITLE_ARCH1='TitleArch1.png'
+TITLE_ARCH2='TitleArch2.png'
+TILE_PLOT='TitlePlot.png'
+ABSTRACT_ARCH1='AbstractArch1.png'
+ABSTRACT_ARCH2='AbstractArch2.png'
+ABSTRACT_PLOT='AbstractPlot.png'
