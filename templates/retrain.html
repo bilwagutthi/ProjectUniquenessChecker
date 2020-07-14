@@ -1,0 +1,45 @@
+{% extends 'admin/master.html' %}
+
+{% block head%}
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+{% endblock head%}
+
+{% block body%}
+<!---->
+<div class="container">
+  <div class="jumbotron">
+    <h1 class="display-9">Re-train vocabulary</h1>
+    <p class="lead">
+      Current Vocabulary size: {{arg1}}
+    </p>
+    <hr class="my-4">
+    <p>Click re-train button below if you want to re-train the word model</p>
+    <p class="lead">
+      <form method="GET">
+        <button type="button" class="btn btn-primary" id='btnReTrain'>Re-train ?</button>
+      </form>
+    </p>
+  </div>
+</div>
+<script>
+  $("document").ready(function () {
+        $('#btnReTrain').click(function () {
+          console.log('Hi im in ajax call !');
+          var callDetails = 
+            {
+              type: 'POST',
+              url: '/retrain'
+              
+            };
+            $.ajax(callDetails).done(function (response) {
+              console.log('Hi i got a response !');
+            });
+
+            });
+        });
+</script>
+
+
+{% endblock body %}

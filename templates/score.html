@@ -1,115 +1,132 @@
 <!doctype html>
 <html>
+
 <head>
     <link rel="stylesheet" type="text/css" href="login.css">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-38578610-5"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
         gtag('js', new Date());
 
         gtag('config', 'UA-38578610-5');
     </script>
     <title>Project Uniqueness Score</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
-    <!-- Bootstrap --> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Abel|Open+Sans:400,600" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
-        body{
-	background-image: linear-gradient( 90deg, #FD6585 10%, #0D25B9 100%);
-    padding-top: 0.5cm;
-    }
-}
+        body {
+            background-image: linear-gradient(90deg, #FD6585 10%, #0D25B9 100%);
+            padding-top: 0.5cm;
+        }
+        }
     </style>
 </head>
 
-<body>  
-<div class="container-fluid">
-    <div class="well well-lg text-center center" style="background-color: #fff">
- 
-        <h1>Project Uniqueness checker</h1>
-        <p>Find how unique your project is in comparission to previous year projects</p>
-     </div>
-    <div class="row">
-        <!-- Coloumn for taking input-->
-        <div class="col-sm-4">
-        <div class="well well-lg">
-            <p class="input-group">
-                <div class="form-group">
-                    <label for="titleEntered"> Enter Title : </label>
-                    <input type="text" class="form-control" id="titleEntered">
-                </div>
-                <div class="form-group">
-                    <label for="abstractEntered"> Enter Abstract : </label>
-                    <textarea class="form-control" rows="5" id="abstractEntered"></textarea>
-                </div>
-            </p>
-            <p class="text-center top-space-40">
-                <button type="submit" class="btn btn-primary btn-lg" id="getScore">Check Score!</button>
-            </p>
+<body>
+    <div class="container-fluid">
+        <div class="well well-lg text-center center" style="background-color: #ffffff">
+
+            <h1>Project Uniqueness checker</h1>
+            <p>Find how unique your project is in comparission to previous year projects</p>
         </div>
+        <div class="row">
+            <!-- Coloumn for taking input-->
+            <div class="col-sm-4">
+                <div class="well well-lg">
+                    <p class="input-group">
+                        <div class="form-group">
+                            <label for="titleEntered"> Enter Title : </label>
+                            <input type="text" class="form-control input-sm" id="titleEntered" ">
+                </div>
+                <div class=" form-group">
+                            <label for="abstractEntered"> Enter Abstract : </label>
+                            <textarea class="form-control input-sm" rows="10" id="abstractEntered"></textarea>
+                        </div>
+                    </p>
+                    <p class="text-center top-space-40">
+                        <button type="submit" class="btn btn-primary btn-lg" id="getScore">Check Score!</button>
+                    </p>
+                </div>
+            </div>
+            <!-- Coloumn displays score -->
+            <p id="ScoreCol"></p>
+            <!-- Coloumn displays table with similar other scores -->
+            <p id="SimCol"></p>
         </div>
-        <!-- Coloumn displays score -->
-        <p id="ScoreCol"></p>
-        <!-- Coloumn displays table with similar other scores -->
-        <p id="SimCol"></p>
     </div>
-</div>
     <script>
         $("document").ready(function () {
             $("#getScore").click(function () {
                 var title = $('#titleEntered').val();
-                var abstract= $('#abstractEntered').val();
-                console.log(title,abstract);
-                    $("#titleEntered").css('border', 'solid 1px #ccc');
-                    $("#abstractEntered").css('border', 'solid 1px #ccc');
-                    var callDetails = {
-                        type: 'POST',
-                        url: '/score',
-                        data: {
-                            'title': title,
-                            'abstract':abstract
-                        }
-                    };
-                    $.ajax(callDetails).done(function (response) {
-                        console.log('Hello! I am in the done part of the ajax call');
-                        
-                        $("#ScoreCol").html('<div id="UniqueScore" class="col-sm-3"></div>');
-                        $("#UniqueScore").html('<div id="Uniquewell" class="well well-lg"></div>');
-                        $('#Uniquewell').html('<div class="panel panel-default" id="UniqPannelScore"></div><div class="panel panel-default" id="UniqPannelSim"></div>');
-                        $('#UniqPannelScore').html('<div class="panel-heading" >Uniqueness Score</div><div class="panel-body" id="UniqScore">');
-                        $('#UniqPannelSim').html('<div class="panel-heading">Most Similar Project</div><div class="panel-body" id="UniqSim"></div>');
-                        $('#UniqScore').html('<p style="font-size:70px;color:purple"class="text-center top-space-20" id="resultDiv"></p>');
-                        $('#UniqSim').html('<p class="text-center top-space-20" id="resultSim"></p>');
-                    
+                var abstract = $('#abstractEntered').val();
+                console.log(title, abstract);
+                $("#titleEntered").css('border', 'solid 1px #ccc');
+                $("#abstractEntered").css('border', 'solid 1px #ccc');
+                var callDetails = {
+                    type: 'POST',
+                    url: '/score',
+                    data: {
+                        'title': title,
+                        'abstract': abstract
+                    }
+                };
+                $.ajax(callDetails).done(function (response) {
+                    console.log('Hello! I am in the done part of the ajax call');
 
-                        //$("#resultDiv").css('color', 'black',);
-                        $("#resultDiv").text(response.score.toFixed(2)+'%');
-                        $("#resultSim").text(response.similarmax);
+                    $("#ScoreCol").html('<div id="UniqueScore" class="col-sm-3"></div>');
+                    $("#UniqueScore").html('<div id="Uniquewell" class="well well-lg"></div>');
+                    $('#Uniquewell').html(
+                        '<div class="panel panel-default" id="UniqPannelScore"></div><div class="panel panel-default" id="UniqPannelSim"></div>'
+                        );
+                    $('#UniqPannelScore').html(
+                        '<div class="panel-heading" >Uniqueness Score</div><div class="panel-body" id="UniqScore">'
+                        );
+                    $('#UniqPannelSim').html(
+                        '<div class="panel-heading">Most Similar Project</div><div class="panel-body" id="UniqSim"></div>'
+                        );
+                    $('#UniqScore').html(
+                        '<p style="font-size:70px;color:purple"class="text-center top-space-20" id="resultDiv"></p>'
+                        );
+                    $('#UniqSim').html(
+                        '<p class="text-center top-space-20" id="resultSim"></p>');
 
-                        $("#SimCol").html('<div id="SimColoumn" class="col-sm-5"></div>');
-                        $("#SimColoumn").html('<div id="SimWell" class="well well-lg"></div>');
-                        var table_titles='<table class="table"><thead><tr><th>Similmar Titles</th><th>Similarity Score</th></tr></thead><tbody style="font-size:12px">'
-                        $.each(response.sim_titles, function(i, item) {
-                            table_titles+='<tr><td>'+item.title+'</td><td>'+item.score.toFixed(2)+'</td></tr>';
-                        });
-                        table_titles+='</tbody><table>';
-                        $("#SimWell").append(table_titles);
 
-                        var table_abs='<table class="table"><thead><tr><th>Similar Abstracts</th><th>Similarity Score</th></tr></thead><tbody style="font-size:12px">'
-                        $.each(response.sim_abstracts, function(i, item) {
-                            table_abs+='<tr><td>'+item.title+'</td><td>'+item.score.toFixed(2)+'</td></tr>';
-                        });
-                        table_abs+='</tbody><table>';
-                        $("#SimWell").append(table_abs);
+                    //$("#resultDiv").css('color', 'black',);
+                    $("#resultDiv").text(response.score.toFixed(2) + '%');
+                    $("#resultSim").text(response.similarmax);
 
+                    $("#SimCol").html('<div id="SimColoumn" class="col-sm-5"></div>');
+                    $("#SimColoumn").html('<div id="SimWell" class="well well-lg"></div>');
+                    var table_titles =
+                        '<table class="table"><thead><tr><th>Similmar Titles</th><th>Similarity Score</th></tr></thead><tbody style="font-size:12px">'
+                    $.each(response.sim_titles, function (i, item) {
+                        table_titles += '<tr><td>' + item.title + '</td><td>' + item
+                            .score.toFixed(2) + '</td></tr>';
                     });
-                
+                    table_titles += '</tbody><table>';
+                    $("#SimWell").append(table_titles);
+
+                    var table_abs =
+                        '<table class="table"><thead><tr><th>Similar Abstracts</th><th>Similarity Score</th></tr></thead><tbody style="font-size:12px">'
+                    $.each(response.sim_abstracts, function (i, item) {
+                        table_abs += '<tr><td>' + item.title + '</td><td>' + item.score
+                            .toFixed(2) + '</td></tr>';
+                    });
+                    table_abs += '</tbody><table>';
+                    $("#SimWell").append(table_abs);
+
+                });
+
             });
         });
     </script>
