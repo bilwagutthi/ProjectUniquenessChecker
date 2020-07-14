@@ -13,14 +13,14 @@ from gensim.parsing.preprocessing import remove_stopwords , preprocess_string
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import Word2VecKeyedVectors
 
+import spacy
 
-from main import main , get_score
-from variables import WORD_VEC_MODEL,ABSTRACT_MODEL_H5,ABSTRACT_MODEL_JSON,TITLE_MODEL_H5, TITLE_MODEL_JSON
+from variables import WORD_VEC_MODEL,TITLE_MODEL_H5, TITLE_MODEL_JSON
 from variables import MAX_ABSTRACT_LENGHT, MAX_TITLE_LENGHT, DIMENSIONS
 from Algorithms.word2vec import list_wordvecs , get_wordvecs
-from Algorithms.Sent2Vec import list_sentvecs , getSentVecs
 from Algorithms.pre_processing import pre_processing
 from Algorithms.Sample_Data.data import sample_data 
+from models import db ,Projects, Colleges
 
 from time import perf_counter
 import tensorflow as tf
@@ -28,6 +28,12 @@ import tensorflow as tf
 from numpy import shape , array , matrix
 import numpy as np
 #import tensorflow.backend as backend
+
+
+print('\n\n Loading Server \n\n')
+app=Flask(__name__)
+app.config.from_pyfile('config.py')
+db.init_app(app)
 
 class ManDist(Layer):
     def __init__(self, **kwargs):
@@ -60,99 +66,80 @@ class TitleModel:
             with self.graph.as_default():
                 pred = self.model.predict(values)
         return(pred)
-class AbstractModel:
-    def __init__(self):
-        json_file = open("MetaData/"+ ABSTRACT_MODEL_JSON , 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        abstract_model = model_from_json(loaded_model_json,custom_objects ={'ManDist': ManDist})
-        abstract_model.load_weights('MetaData/'+ABSTRACT_MODEL_H5)
-        abstract_model.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['accuracy','mean_squared_error','mean_absolute_percentage_error'])
-        self.model = abstract_model
-        self.model._make_predict_function()
-        self.session = tb.get_session()
-        self.graph = tf.get_default_graph()
-    def predict(self,values):
-        with self.session.as_default():
-            with self.graph.as_default():
-                pred = self.model.predict(values)
-        return(pred)
 
 title_model=TitleModel()
-abstract_model=AbstractModel()
+
 # loading outer data
-previous_titles = sample_data.keys()
-previous_abstracts = sample_data.values()
+def previous():
+    with app.app_context():
+        temp=Projects.query.with_entities(Projects.title).all()
+        titles=[i[0] for i in temp]
+        temp=Projects.query.with_entities(Projects.abstract).all()
+        abstracts=[i[0] for i in temp]
+        return titles,abstracts
+
+previous_titles, previous_abstracts= previous()
+
 #Load WordVec models
 word_model = Word2VecKeyedVectors.load("MetaData/"+WORD_VEC_MODEL)
 word_model.init_sims(replace=False)
-#Get word vectors of previous titles and abstracts
-title_vecList=list_wordvecs(model=word_model, var_list=list(sample_data.keys()),max_seq_length=MAX_TITLE_LENGHT, dimensions=DIMENSIONS)
-#abstract_vecList=list_wordvecs(model=word_model, var_list=list(sample_data.values()),max_seq_lenght=varb.MAX_ABSTRACT_LENGHT , dimensions=varb.DIMENSIONS)
-abstract_vecList=list_sentvecs(word_model=word_model, para_list=list(sample_data.values()),max_seq_length=MAX_ABSTRACT_LENGHT , dimensions=DIMENSIONS)
+pp=pre_processing()
+#Get word vectors of previous titles
+title_vecList=list_wordvecs(model=word_model, var_list=previous_titles,max_seq_length=MAX_TITLE_LENGHT, dimensions=DIMENSIONS)
 
-def gget_score(test_title,test_abstract,title_compare,abstract_compare,wordmodel,titlemodel,abstractmodel,dataset_titles,dataset_abstracts):
-    
-    pp=pre_processing()
+nlp = spacy.blank('en')
+keys = []
+for idx in range(len(word_model.vocab)):
+    keys.append(word_model.index2word[idx])
+nlp.vocab.vectors = spacy.vocab.Vectors(data=word_model.syn0, keys=keys)
+
+def get_score(test_title,test_abstract,title_compare,wordmodel,titlemodel,dataset_titles,dataset_abstracts):
     test_title_tokens = pp.advanced_ops(test_title)
-    #test_abstract_tokens = pp.advanced_ops(test_abstract)
-    tim1=perf_counter()
     test_title_vectors= get_wordvecs(model=wordmodel,tokens=test_title_tokens,max_seq_lenght=MAX_TITLE_LENGHT,dimensions=DIMENSIONS)
-    test_abstract_vectors=getSentVecs(paragraph=test_abstract,word_model=wordmodel,dimensions=DIMENSIONS,max_seq_len=MAX_ABSTRACT_LENGHT)
-    #get_wordvecs(model=wordmodel,tokens=test_abstract_tokens ,max_seq_lenght=MAX_ABSTRACT_LENGHT,dimensions=DIMENSIONS)
-    print("Time to get vectors 1 :",(perf_counter()-tim1))
-    print('shape',np.shape(test_title_vectors))
-    print('comp shape',np.shape(title_compare))
-    print(test_title_vectors[0][0][0])
-    print(title_compare[0][0][0])
-    titles_dist=[]
+    titles_dist_0=[]
     for title in title_compare:
         pred=titlemodel.predict([array([title]),array(test_title_vectors)])
-        titles_dist.append(pred[0][0])
-    top3titles=sorted(zip(titles_dist,dataset_titles),reverse=True)[:3]
-    abs_dist=[]
-    for absvec in abstract_compare:
-        pred=abstractmodel.predict([array([absvec]),array([test_abstract_vectors])])
-        abs_dist.append(pred[0][0])
+        print(pred,end=' ')
+        titles_dist_0.append(pred[0][0])
+    norm=1.5182762
+    titles_dist=[]  
+    for dist in titles_dist_0:
+        x=dist/norm
+        titles_dist.append(round(x*100,5))
+        print(x,end=' ')
     
+    top3titles=sorted(zip(titles_dist,dataset_titles),reverse=True)[:3]
+    
+    abs_dist=[]
+    for abstract in dataset_abstracts:
+        doc1=nlp(remove_stopwords(abstract))
+        doc2=nlp(remove_stopwords(test_abstract))
+        abs_dist.append(doc1.similarity(doc2)*100)
+        print(doc1.similarity(doc2),end='')
     top3abstracts=sorted(zip(abs_dist,dataset_titles),reverse=True)[:3]
-
     max_sim=max(max(top3abstracts),max(top3titles))
+    
     uniqueness=100- max_sim[0] 
     top_title=max_sim[1]
 
-    return uniqueness,top_title,top3titles,top3abstracts
+    return (uniqueness,top_title,top3titles,top3abstracts)
     
 
-
-
-app=Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/score", methods=['GET', 'POST'])
 def score():
     if request.method == 'GET':
-        #return the form
         return render_template('score.html')
+
     if request.method == 'POST':
-        #return the answer
         title = request.form.get('title') 
         abstract = request.form.get('abstract')
-        print('\n'*5,"THe title and abstract is ",title,abstract,'\n'*5)
-        #result= main(title, abstract)
-        newpin= gget_score(test_title=title, test_abstract=abstract, 
-                           title_compare= title_vecList, abstract_compare=abstract_vecList, wordmodel=word_model,
-                           titlemodel=title_model, abstractmodel=abstract_model,
+        result= get_score(test_title=title, test_abstract=abstract, 
+                           title_compare= title_vecList, wordmodel=word_model,
+                           titlemodel=title_model,
                            dataset_titles=previous_titles,dataset_abstracts=previous_abstracts)
-        print(newpin)
-        result=(86.4638939499855, 'Research is done on keyword extraction based on Word2Vec weighted TextRank', 
-                [(27.0, 'Wearable smart health monitoring system for animals'),
-                 (0.05, 'The Collaborative Virtual Reality Neurorobotics Lab'),
-                 (0.90, 'Similarity Analysis of Law Documents Based on Word2vec')],
-                [(13.536106050014496, 'Research is done on keyword extraction based on Word2Vec weighted TextRank'),
-                 (0.08547345059923828, 'Efficient Video Classification Using Fewer Frames'),
-                 (0.05178825813345611, 'Mobile Search Behaviors: An In-depth Analysis Based on Contexts, APPs, and Devices')
-                 ])
+        
         sim_titles={i:{'score':result[2][i][0],'title':result[2][i][1]} for i in range(3)}
         sim_abstracts={i:{'score':result[3][i][0],'title':result[3][i][1]} for i in range(3)}
         response={
