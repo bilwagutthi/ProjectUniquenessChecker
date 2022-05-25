@@ -82,7 +82,7 @@ pycparser==2.20
 PyDispatcher==2.0.5
 pydot==1.4.1
 PyHamcrest==2.0.2
-PyJWT==1.7.1
+PyJWT==2.4.0
 pyOpenSSL==19.1.0
 pyparsing==2.4.6
 pyreadline==2.1
