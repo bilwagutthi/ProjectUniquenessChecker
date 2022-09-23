@@ -74,7 +74,7 @@ plac==0.9.6
 pluggy==0.12.0
 preshed==1.0.1
 Protego==0.1.16
-protobuf==3.11.4
+protobuf==3.18.3
 py==1.8.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
