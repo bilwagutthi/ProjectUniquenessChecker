@@ -116,7 +116,7 @@ thinc==6.10.3
 toolz==0.10.0
 tornado==6.0.4
 tqdm==4.46.0
-Twisted==20.3.0
+Twisted==22.10.0
 ujson==2.0.3
 Unidecode==1.1.1
 urllib3==1.25.8
